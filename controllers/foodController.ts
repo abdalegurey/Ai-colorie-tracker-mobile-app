@@ -75,7 +75,11 @@ export const scanFood = async (req: Request, res: Response): Promise<void> => {
     console.log("Optimizing image...");
 
     
-    const optimizedImage = await optimizeImage(image);
+if (!image) {
+  throw new Error("Image is required");
+}
+
+const optimizedImage = await optimizeImage(image)
 
 
         const { url, key } = await uploadToR2(optimizedImage);
