@@ -11,6 +11,7 @@ const connectDB = async (): Promise<void> => {
         "MongoDB URI is not defined in the environment variables"
       );
     }
+    console.log("waa",config.mongodbUri);
 
     const conn = await mongoose.connect(mongoURI);
     console.log(`Connected to MongoDB: ${conn.connection.host}`);
