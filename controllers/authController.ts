@@ -146,7 +146,7 @@ export const updateProfile = async (req: Request, res: Response): Promise<void> 
           onboardingCompleted: updatedUser.onboardingCompleted,
         });
     } catch (error) {
-        console.error("Error updating profile:", error);
+        console.error("Error updatinggg profile:", error);
         res.status(500).json({ message: "Internal server error" });
     }
 }
