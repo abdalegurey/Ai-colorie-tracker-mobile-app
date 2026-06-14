@@ -1,7 +1,7 @@
 import express from "express";
 import { protect } from "../middleware/auth.js";
 import upload from "../middleware/upload.js";
-import { analyzeFoodImage, discardAnalyzedFood, saveFoodEntry, scanFood } from "../controllers/foodController.js";
+import { analyzeFoodImage, discardAnalyzedFood, getEntries, saveFoodEntry, scanFood } from "../controllers/foodController.js";
 
 
 
@@ -11,6 +11,6 @@ router.post('/scan',protect, upload.single('image'),scanFood);
   router.post('/analyze',protect, upload.single('image'),analyzeFoodImage);
  router.post('/save',protect, saveFoodEntry);
  router.post('/discard',protect, discardAnalyzedFood);
-// router.get('/entries',protect, getEnabledCategories);
+ router.get('/entries',protect, getEntries);
 
 export default router;
