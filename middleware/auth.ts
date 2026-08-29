@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import User, { IUser } from "../models/User.js";
+import { getDatabaseErrorMessage, isDatabaseError } from "../utils/errors.js";
 
 
 // extend the request interface to include the user object
@@ -38,8 +39,6 @@ export const protect = async (
 
       // verify token
 
-      console.log("secret", process.env.JWT_SECRET);
-
       const decoded = jwt.verify(token, process.env.JWT_SECRET || "") as {
         id: string;
       };
@@ -56,8 +55,13 @@ export const protect = async (
       next();
 
     } catch (error) {
+        if (isDatabaseError(error)) {
+          res.status(503).json({ message: getDatabaseErrorMessage() });
+          return;
+        }
+
         console.error("Error verifying token:", error);
-        res.status(500).json({ message: "Internal server error" });
+        res.status(401).json({ message: "Unauthorized, invalid or expired token" });
         return;
     }
   }else{

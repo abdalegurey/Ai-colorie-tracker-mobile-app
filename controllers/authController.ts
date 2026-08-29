@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import User from "../models/User.js"
 import jwt from "jsonwebtoken";
+import { handleControllerError } from "../utils/errors.js";
 
 
 const generateToken = (id: string): string => {
@@ -45,15 +46,16 @@ export const register = async (req: Request, res: Response): Promise<void> => {
     res.status(201).json({
       message: "User created successfully",
       user: {
+        _id: user._id,
         email: user.email,
         name: user.name,
         dailyColorieGoal: user.dailyColorieGoal,
+        onboardingCompleted: user.onboardingCompleted,
         token: generateToken(user._id.toString()),
       },
     });
   } catch (error) {
-    console.error("Error creating user:", error);
-    res.status(500).json({ message: "Internal server error" });
+    handleControllerError(error, res, "Unable to create account. Please try again.");
   }
 };
 
@@ -96,15 +98,16 @@ export const login  = async (req: Request, res: Response): Promise<void> => {
     res.status(200).json({
         message: "Login successful",
         user: {
+            _id: user._id,
             email: user.email,
             name: user.name,
             dailyColorieGoal: user.dailyColorieGoal,
+            onboardingCompleted: user.onboardingCompleted,
             token: token,
         },
     });
     } catch (error) {
-        console.error("Error logging in:", error);
-        res.status(500).json({ message: "Internal server error" });
+        handleControllerError(error, res, "Unable to log in. Please try again.");
     }
 }
 

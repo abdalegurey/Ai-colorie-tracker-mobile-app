@@ -1,9 +1,7 @@
 import dotenv from "dotenv";
 
-import express, {  Request, Response, NextFunction } from "express";
-import cors from "cors";
-import connectDB from "./config/db.js";
-;
+import express, { Request, Response, NextFunction } from "express";
+import connectDB, { isDbConnected } from "./config/db.js";
 import authRoutes from "./routes/auth.js";
 
 import foodRoutes from "./routes/food.js";
@@ -15,10 +13,16 @@ dotenv.config();
 
 const app = express();
 
-
-connectDB();
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true }));
+
+app.get("/health", (req: Request, res: Response) => {
+  res.status(isDbConnected() ? 200 : 503).json({
+    status: isDbConnected() ? "ok" : "degraded",
+    database: isDbConnected() ? "connected" : "disconnected",
+    timestamp: new Date().toISOString(),
+  });
+});
 
 // API routes
 
@@ -50,6 +54,17 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 
 const PORT =  process.env.PORT || 8000;
 
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
+const startServer = async () => {
+  await connectDB();
+
+  app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+    if (!isDbConnected()) {
+      console.warn(
+        "Server started without MongoDB. Auth and data routes will return 503 until connected."
+      );
+    }
+  });
+};
+
+void startServer();

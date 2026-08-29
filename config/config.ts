@@ -4,7 +4,10 @@ dotenv.config();
 
 export const config = {
     port: parseInt(process.env.PORT || "8000"),
-    mongodbUri: process.env.NODE_ENV === "production" ? process.env.MONGODB_URI_PROD : process.env.MONGODB_URI_DEV,
+    mongodbUri:
+      process.env.NODE_ENV === "production"
+        ? process.env.MONGODB_URI_PROD || process.env.MONGODB_URI
+        : process.env.MONGODB_URI_DEV || process.env.MONGODB_URI,
     jwtSecret: process.env.JWT_SECRET,
     openaiApiKey: process.env.OPENAI_API_KEY,
     r2BucketName: process.env.R2_BUCKET_NAME,
